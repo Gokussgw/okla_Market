@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "831534010572",
+    "project_id": "okla-market",
+    "storage_bucket": "okla-market.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:831534010572:android:0a48d630e9c2bc73b83269",
+        "android_client_info": {
+          "package_name": "com.example.oklamarket"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9j0hnCchx26uhiNW6PShj486uKxt4F88"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:831534010572:android:7918c4134b4f433bb83269",
+        "android_client_info": {
+          "package_name": "com.example.phase_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9j0hnCchx26uhiNW6PShj486uKxt4F88"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
