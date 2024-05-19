@@ -4,18 +4,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'profile_page.dart';
 import 'sign_in_page.dart';
 import 'sell_page.dart';
+import 'product_list_page.dart';
 
 class HomePage extends StatefulWidget {
-  final User user; // Accept a User object
+  final User user;
 
-  HomePage({required this.user}); // Constructor to accept the User object
+  HomePage({required this.user});
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  String userName = "Loading..."; // Default text while loading data
+  String userName = "Loading...";
 
   @override
   void initState() {
@@ -27,7 +28,7 @@ class _HomePageState extends State<HomePage> {
     FirebaseFirestore.instance.collection('users').doc(widget.user.uid).get().then((DocumentSnapshot documentSnapshot) {
       if (documentSnapshot.exists) {
         setState(() {
-          userName = documentSnapshot.get('name'); // Assuming 'name' is the field you want
+          userName = documentSnapshot.get('name');
         });
       } else {
         setState(() {
@@ -38,7 +39,6 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         userName = "Failed to fetch data";
       });
-      print("Error fetching user data: $error");
     });
   }
 
@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-    )?? false;
+    ) ?? false;
 
     if (didRequestSignOut) {
       await FirebaseAuth.instance.signOut();
@@ -80,7 +80,6 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(Icons.logout),
             onPressed: () => _confirmSignOut(context),
           )
-
         ],
       ),
       body: Center(
@@ -99,14 +98,10 @@ class _HomePageState extends State<HomePage> {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SellPage(user: widget.user)),
-                );
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ProductListPage(user: widget.user)));
               },
-              child: Text('Sell Product'),
+              child: Text('Manage Products'),
             )
-
           ],
         ),
       ),
