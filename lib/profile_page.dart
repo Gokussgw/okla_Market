@@ -13,14 +13,19 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  String userName = "Loading...";
+  late TextEditingController _nameController;
+  late TextEditingController _dobController;
   String userEmail = "Loading...";
-  String userDOB = "Loading...";
   String userImageUrl = "";  // State variable for user image URL
+
+  bool _isEditingName = false;
+  bool _isEditingDOB = false;
 
   @override
   void initState() {
     super.initState();
+    _nameController = TextEditingController();
+    _dobController = TextEditingController();
     fetchUserDetails();
   }
 
@@ -30,28 +35,48 @@ class _ProfilePageState extends State<ProfilePage> {
       if (userData.exists) {
         Map<String, dynamic> data = userData.data() as Map<String, dynamic>;
         setState(() {
-          userName = data['name'] ?? "No name available";
+          _nameController.text = data['name'] ?? "No name available";
           userEmail = data['email'] ?? "No email available";
-          userDOB = data['dateOfBirth'] ?? "No date of birth available";
+          _dobController.text = data['dateOfBirth'] ?? "No date of birth available";
           userImageUrl = data['imageUrl'] ?? '';  // Fetching image URL from Firestore
-        });
-      } else {
-        setState(() {
-          userName = "No name available";
-          userEmail = "No email available";
-          userDOB = "No date of birth available";
-          userImageUrl = '';
         });
       }
     } catch (e) {
       print("Failed to fetch user details: $e");
-      setState(() {
-        userName = "Failed to fetch data";
-        userEmail = "Failed to fetch data";
-        userDOB = "Failed to fetch data";
-        userImageUrl = '';
-      });
     }
+  }
+
+  void updateNameInDatabase() {
+    FirebaseFirestore.instance.collection('users').doc(widget.user.uid).update({
+      'name': _nameController.text,
+    }).then((_) {
+      print("Name updated successfully!");
+      setState(() {
+        _isEditingName = false; // Exit edit mode
+      });
+    }).catchError((error) {
+      print("Failed to update name: $error");
+    });
+  }
+
+  void updateDOBInDatabase() {
+    FirebaseFirestore.instance.collection('users').doc(widget.user.uid).update({
+      'dateOfBirth': _dobController.text,
+    }).then((_) {
+      print("DOB updated successfully!");
+      setState(() {
+        _isEditingDOB = false; // Exit edit mode
+      });
+    }).catchError((error) {
+      print("Failed to update DOB: $error");
+    });
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _dobController.dispose();
+    super.dispose();
   }
 
   @override
@@ -60,27 +85,89 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         title: Text('Profile Page'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            userImageUrl.isNotEmpty
-                ? CircleAvatar(
-              radius: 60,
-              backgroundImage: CachedNetworkImageProvider(userImageUrl),
-              backgroundColor: Colors.transparent,
-            )
-                : CircleAvatar(
-              radius: 60,
-              child: Icon(Icons.account_circle, size: 60),
-              backgroundColor: Colors.grey[200],
+      body: ListView(
+        children: <Widget>[
+          Container(
+            color: Colors.black,
+            child: Center(
+              child: Column(
+                children: [
+                  SizedBox(height: 20),
+                  userImageUrl.isNotEmpty
+                      ? CircleAvatar(
+                        radius: 60,
+                        backgroundImage: CachedNetworkImageProvider(userImageUrl),
+                        backgroundColor: Colors.transparent,
+                      )
+                      : CircleAvatar(
+                        radius: 60,
+                        child: Icon(Icons.account_circle, size: 60),
+                        backgroundColor: Colors.grey[200],
+                      ),
+                  SizedBox(height: 20),
+                ],
+              ),
             ),
-            SizedBox(height: 20),
-            Text('Name: $userName', style: TextStyle(fontSize: 20)),
-            Text('Email: $userEmail', style: TextStyle(fontSize: 20)),
-            Text('Date of Birth: $userDOB', style: TextStyle(fontSize: 20)),
-          ],
-        ),
+          ),
+          Container(
+            color: Colors.white,
+            child: Column(
+              children: <Widget>[
+                ListTile(
+                  title: Text('Name'),
+                  subtitle: _isEditingName
+                      ? TextField(
+                          controller: _nameController,
+                          decoration: InputDecoration(
+                            hintText: "Edit name",
+                          ),
+                          onSubmitted: (value) => updateNameInDatabase(),
+                        )
+                      : Text(_nameController.text),
+                  trailing: IconButton(
+                    icon: Icon(_isEditingName ? Icons.save : Icons.edit),
+                    onPressed: () {
+                      if (_isEditingName) {
+                        updateNameInDatabase();
+                      } else {
+                        setState(() { _isEditingName = true; });
+                      }
+                    },
+                  ),
+                ),
+                Divider(color: Colors.grey),
+                ListTile(
+                  title: Text('Email'),
+                  subtitle: Text(userEmail),
+                ),
+                Divider(color: Colors.grey),
+                ListTile(
+                  title: Text('Date of Birth'),
+                  subtitle: _isEditingDOB
+                      ? TextField(
+                          controller: _dobController,
+                          decoration: InputDecoration(
+                            hintText: "Edit date of birth",
+                          ),
+                          onSubmitted: (value) => updateDOBInDatabase(),
+                        )
+                      : Text(_dobController.text),
+                  trailing: IconButton(
+                    icon: Icon(_isEditingDOB ? Icons.save : Icons.edit),
+                    onPressed: () {
+                      if (_isEditingDOB) {
+                        updateDOBInDatabase();
+                      } else {
+                        setState(() { _isEditingDOB = true; });
+                      }
+                    },
+                  ),
+                ),
+                Divider(color: Colors.grey),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
