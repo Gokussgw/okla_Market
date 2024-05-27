@@ -6,7 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 class ProfilePage extends StatefulWidget {
   final User user;
 
-  ProfilePage({required this.user});
+  const ProfilePage({super.key, required this.user});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -83,7 +83,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile Page'),
+        title: const Text('Profile Page'),
       ),
       body: ListView(
         children: <Widget>[
@@ -92,7 +92,7 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Center(
               child: Column(
                 children: [
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   userImageUrl.isNotEmpty
                       ? CircleAvatar(
                         radius: 60,
@@ -101,10 +101,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       )
                       : CircleAvatar(
                         radius: 60,
-                        child: Icon(Icons.account_circle, size: 60),
                         backgroundColor: Colors.grey[200],
+                        child: const Icon(Icons.account_circle, size: 60),
                       ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -114,11 +114,11 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Column(
               children: <Widget>[
                 ListTile(
-                  title: Text('Name'),
+                  title: const Text('Name'),
                   subtitle: _isEditingName
                       ? TextField(
                           controller: _nameController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             hintText: "Edit name",
                           ),
                           onSubmitted: (value) => updateNameInDatabase(),
@@ -135,18 +135,18 @@ class _ProfilePageState extends State<ProfilePage> {
                     },
                   ),
                 ),
-                Divider(color: Colors.grey),
+                const Divider(color: Colors.grey),
                 ListTile(
-                  title: Text('Email'),
+                  title: const Text('Email'),
                   subtitle: Text(userEmail),
                 ),
-                Divider(color: Colors.grey),
+                const Divider(color: Colors.grey),
                 ListTile(
-                  title: Text('Date of Birth'),
+                  title: const Text('Date of Birth'),
                   subtitle: _isEditingDOB
                       ? TextField(
                           controller: _dobController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             hintText: "Edit date of birth",
                           ),
                           onSubmitted: (value) => updateDOBInDatabase(),
@@ -163,7 +163,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     },
                   ),
                 ),
-                Divider(color: Colors.grey),
+                const Divider(color: Colors.grey),
               ],
             ),
           ),

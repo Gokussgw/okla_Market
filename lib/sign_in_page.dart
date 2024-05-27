@@ -8,6 +8,8 @@ class SignInPage extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
+  SignInPage({super.key});
+
   Future<void> signInWithEmailAndPassword(BuildContext context) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -19,7 +21,7 @@ class SignInPage extends StatelessWidget {
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage(user: userCredential.user!)));
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Failed to sign in")));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to sign in")));
     }
   }
 
@@ -27,7 +29,7 @@ class SignInPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white, // Set the background color to white
-      appBar: AppBar(title: Text("Sign In"), backgroundColor: Colors.black, foregroundColor: Colors.white),
+      appBar: AppBar(title: const Text("Sign In"), backgroundColor: Colors.black, foregroundColor: Colors.white),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -35,37 +37,37 @@ class SignInPage extends StatelessWidget {
             Image.asset('assets/logo.png', width:120, height: 120), // Display the logo at the top of the page
             TextField(
               controller: emailController,
-              decoration: InputDecoration(labelText: "Email"),
+              decoration: const InputDecoration(labelText: "Email"),
             ),
             TextField(
               controller: passwordController,
-              decoration: InputDecoration(labelText: "Password"),
+              decoration: const InputDecoration(labelText: "Password"),
               obscureText: true,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white, backgroundColor: Colors.black, // Text color of the button
               ),
               onPressed: () => signInWithEmailAndPassword(context),
-              child: Text("Sign In"),
+              child: const Text("Sign In"),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             TextButton(
               style: TextButton.styleFrom(
                 foregroundColor: Colors.black, // Text color
               ),
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SignUpPage())),
-              child: Text("No account? Sign up"),
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SignUpPage())),
+              child: const Text("No account? Sign up"),
             ),
             TextButton(
               style: TextButton.styleFrom(
                 foregroundColor: Colors.black, // Text color
               ),
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPasswordPage()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const ForgotPasswordPage()));
               },
-              child: Text("Forgot Password?"),
+              child: const Text("Forgot Password?"),
             ),
           ],
         ),

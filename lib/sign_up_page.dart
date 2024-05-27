@@ -7,6 +7,8 @@ import 'dart:typed_data';
 import 'home_page.dart';
 
 class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
+
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
@@ -31,7 +33,7 @@ class _SignUpPageState extends State<SignUpPage> {
     });
 
     if (selectedDate == null || _image == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please complete all fields and upload an image')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please complete all fields and upload an image')));
       setState(() {
         _isProcessing = false;
       });
@@ -47,7 +49,7 @@ class _SignUpPageState extends State<SignUpPage> {
       User? user = userCredential.user;
       if (user != null) {
         // Upload the profile image to Firebase Storage
-        final ref = _storage.ref().child('user_images').child(user.uid + '.jpg');
+        final ref = _storage.ref().child('user_images').child('${user.uid}.jpg');
         await ref.putData(_image!);  // Upload the image
         final imageUrl = await ref.getDownloadURL();  // Retrieve the image URL
 
@@ -103,7 +105,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Sign Up")),
+      appBar: AppBar(title: const Text("Sign Up")),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -112,38 +114,38 @@ class _SignUpPageState extends State<SignUpPage> {
               CircleAvatar(
                 radius: 40,
                 backgroundImage: _image != null ? MemoryImage(_image!) : null,
-                child: _image == null ? Icon(Icons.camera_alt, size: 40) : null,
+                child: _image == null ? const Icon(Icons.camera_alt, size: 40) : null,
               ),
               TextButton.icon(
-                icon: Icon(Icons.image),
-                label: Text('Add Image'),
+                icon: const Icon(Icons.image),
+                label: const Text('Add Image'),
                 onPressed: _pickImage,
               ),
               TextField(
                 controller: nameController,
-                decoration: InputDecoration(labelText: "Name"),
+                decoration: const InputDecoration(labelText: "Name"),
               ),
               TextField(
                 controller: emailController,
-                decoration: InputDecoration(labelText: "Email"),
+                decoration: const InputDecoration(labelText: "Email"),
               ),
               TextField(
                 controller: passwordController,
-                decoration: InputDecoration(labelText: "Password"),
+                decoration: const InputDecoration(labelText: "Password"),
                 obscureText: true,
               ),
               TextField(
                 controller: dobController,
-                decoration: InputDecoration(labelText: "Date of Birth"),
+                decoration: const InputDecoration(labelText: "Date of Birth"),
                 readOnly: true, // Prevent keyboard from appearing
                 onTap: _pickDateDialog,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _isProcessing
-                  ? CircularProgressIndicator()
+                  ? const CircularProgressIndicator()
                   : ElevatedButton(
                 onPressed: signUpWithEmailAndPassword,
-                child: Text("Sign Up"),
+                child: const Text("Sign Up"),
               ),
             ],
           ),

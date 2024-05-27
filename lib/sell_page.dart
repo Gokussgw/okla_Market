@@ -11,7 +11,7 @@ class SellPage extends StatefulWidget {
   final User user;
   final DocumentSnapshot? product;
 
-  SellPage({required this.user, this.product});
+  const SellPage({super.key, required this.user, this.product});
 
   @override
   _SellPageState createState() => _SellPageState();
@@ -38,14 +38,14 @@ class _SellPageState extends State<SellPage> {
     if (result != null) {
       setState(() {
         _imageFile = result.files.single.bytes;
-        _uploadedImageUrl = 'data:image/jpg;base64,' + base64Encode(_imageFile!);
+        _uploadedImageUrl = 'data:image/jpg;base64,${base64Encode(_imageFile!)}';
       });
     }
   }
 
   Future<void> _uploadProduct() async {
     if (_nameController.text.isEmpty || _priceController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please fill all fields')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
       return;
     }
     try {
@@ -63,10 +63,10 @@ class _SellPageState extends State<SellPage> {
 
       if (widget.product == null) {
         await FirebaseFirestore.instance.collection('products').add(productData);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Product uploaded successfully!')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Product uploaded successfully!')));
       } else {
         await FirebaseFirestore.instance.collection('products').doc(widget.product!.id).update(productData);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Product updated successfully!')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Product updated successfully!')));
       }
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProductListPage(user: widget.user)));
     } catch (e) {
@@ -97,25 +97,25 @@ class _SellPageState extends State<SellPage> {
         child: Column(
           children: [
             IconButton(
-              icon: Icon(Icons.image),
+              icon: const Icon(Icons.image),
               onPressed: _pickImage,
               tooltip: 'Pick Image',
             ),
             _uploadedImageUrl == null
-                ? Text('No image selected.')
+                ? const Text('No image selected.')
                 : Image.memory(
                     base64Decode(_uploadedImageUrl!.split(',')[1]),
                     height: 300,
-                    errorBuilder: (context, error, stackTrace) => Text('Failed to load image'),
+                    errorBuilder: (context, error, stackTrace) => const Text('Failed to load image'),
                   ),
             TextField(
               controller: _nameController,
-              decoration: InputDecoration(labelText: 'Product Name'),
+              decoration: const InputDecoration(labelText: 'Product Name'),
             ),
             TextField(
               controller: _priceController,
-              decoration: InputDecoration(labelText: 'Price'),
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              decoration: const InputDecoration(labelText: 'Price'),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
             ),
             ElevatedButton(
               onPressed: _uploadProduct,

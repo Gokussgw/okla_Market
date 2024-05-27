@@ -6,16 +6,16 @@ import 'sell_page.dart';
 class ProductListPage extends StatelessWidget {
   final User user;
 
-  ProductListPage({required this.user});
+  const ProductListPage({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Product List'),
+        title: const Text('Product List'),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) => SellPage(user: user)));
             },
@@ -26,7 +26,7 @@ class ProductListPage extends StatelessWidget {
         stream: FirebaseFirestore.instance.collection('products').where('userId', isEqualTo: user.uid).snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
           final products = snapshot.data!.docs;
           return ListView.builder(
@@ -38,10 +38,10 @@ class ProductListPage extends StatelessWidget {
                 title: Text(product['name']),
                 subtitle: Text('\$${product['price']}'),
                 trailing: IconButton(
-                  icon: Icon(Icons.delete),
+                  icon: const Icon(Icons.delete),
                   onPressed: () async {
                     await FirebaseFirestore.instance.collection('products').doc(product.id).delete();
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Product deleted successfully')));
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Product deleted successfully')));
                   },
                 ),
                 onTap: () {
