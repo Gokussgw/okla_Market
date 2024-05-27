@@ -1,4 +1,4 @@
-import 'dart:convert'; // Add this import
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,6 +20,7 @@ class SellPage extends StatefulWidget {
 class _SellPageState extends State<SellPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _detailsController = TextEditingController();
   Uint8List? _imageFile;
   String? _uploadedImageUrl;
 
@@ -29,8 +30,17 @@ class _SellPageState extends State<SellPage> {
     if (widget.product != null) {
       _nameController.text = widget.product!['name'];
       _priceController.text = widget.product!['price'].toString();
+      _detailsController.text = widget.product!['details'] ?? '';
       _uploadedImageUrl = widget.product!['imageUrl'];
     }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _priceController.dispose();
+    _detailsController.dispose();
+    super.dispose();
   }
 
   Future<void> _pickImage() async {
@@ -44,7 +54,7 @@ class _SellPageState extends State<SellPage> {
   }
 
   Future<void> _uploadProduct() async {
-    if (_nameController.text.isEmpty || _priceController.text.isEmpty) {
+    if (_nameController.text.isEmpty || _priceController.text.isEmpty || _detailsController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
       return;
     }
@@ -58,6 +68,7 @@ class _SellPageState extends State<SellPage> {
         'userId': widget.user.uid,
         'name': _nameController.text,
         'price': double.parse(_priceController.text),
+        'details': _detailsController.text,
         'imageUrl': imageUrl,
       };
 
@@ -81,12 +92,6 @@ class _SellPageState extends State<SellPage> {
     UploadTask uploadTask = ref.putData(image);
     TaskSnapshot snapshot = await uploadTask;
     return await snapshot.ref.getDownloadURL();
-  }
-
-  void _setUploadedImageUrl(String url) {
-    setState(() {
-      _uploadedImageUrl = url;
-    });
   }
 
   @override
@@ -116,6 +121,11 @@ class _SellPageState extends State<SellPage> {
               controller: _priceController,
               decoration: const InputDecoration(labelText: 'Price'),
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            ),
+            TextField(
+              controller: _detailsController,
+              decoration: const InputDecoration(labelText: 'Product Details'),
+              maxLines: 3,
             ),
             ElevatedButton(
               onPressed: _uploadProduct,
