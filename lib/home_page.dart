@@ -6,11 +6,12 @@ import 'sign_in_page.dart';
 import 'sell_page.dart';
 import 'product_page.dart';
 import 'product_list_page.dart';
+import 'cart_page.dart';
 
 class HomePage extends StatefulWidget {
   final User user;
 
-  HomePage({required this.user});
+  const HomePage({Key? key, required this.user}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -26,63 +27,53 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildProductGrid() {
-  return StreamBuilder<QuerySnapshot>(
-    stream: _productsStream,
-    builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-      if (snapshot.hasError) {
-        return Text('Something went wrong');
-      }
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return CircularProgressIndicator();
-      }
-      var products = snapshot.data!.docs;
-      return GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 1,
-        ),
-        itemCount: products.length,
-        itemBuilder: (context, index) {
-          var product = products[index];
-          return MouseRegion(
-            onEnter: (_) => setState(() {}),
-            onExit: (_) => setState(() {}),
-            child: Card(
+    return StreamBuilder<QuerySnapshot>(
+      stream: _productsStream,
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Text('Something went wrong');
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        }
+        var products = snapshot.data!.docs;
+        return GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 1,
+          ),
+          itemCount: products.length,
+          itemBuilder: (context, index) {
+            var product = products[index];
+            return Card(
               elevation: 3,
               margin: EdgeInsets.all(10),
               child: InkWell(
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(
-                    builder: (_) => ProductPage(product: product)
+                    builder: (_) => ProductPage(product: product, user: widget.user)
                   ));
                 },
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center, // Center vertically
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Expanded(
-                      child: Center( // Center horizontally
-                        child: Image.network(product['imageUrl'], fit: BoxFit.scaleDown),
-                      ),
+                      child: Image.network(product['imageUrl'], fit: BoxFit.cover),
                     ),
                     Padding(
                       padding: EdgeInsets.all(8),
                       child: Text(product['name'], style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 8),
-                      child: Text('\$${product['price']}', style: TextStyle(color: Colors.grey)),
-                    ),
+                    Text('\$${product['price']}', style: TextStyle(color: Colors.grey)),
                   ],
                 ),
               ),
-            ),
-          );
-        },
-      );
-    },
-  );
-}
-
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +81,13 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text('Welcome to the Market!'),
         actions: [
+          IconButton(
+            icon: Icon(Icons.shopping_cart),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CartPage(user: widget.user))
+            ),
+          ),
           PopupMenuButton<int>(
             onSelected: (item) => onSelected(context, item),
             itemBuilder: (context) => [

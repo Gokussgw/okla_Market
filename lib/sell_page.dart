@@ -21,6 +21,7 @@ class _SellPageState extends State<SellPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _detailsController = TextEditingController();
+  final TextEditingController _quantityController = TextEditingController();
   Uint8List? _imageFile;
   String? _uploadedImageUrl;
 
@@ -31,7 +32,10 @@ class _SellPageState extends State<SellPage> {
       _nameController.text = widget.product!['name'];
       _priceController.text = widget.product!['price'].toString();
       _detailsController.text = widget.product!['details'] ?? '';
+      _quantityController.text = widget.product!['quantity'].toString();
       _uploadedImageUrl = widget.product!['imageUrl'];
+    } else {
+      _quantityController.text = '1'; // Default quantity
     }
   }
 
@@ -40,6 +44,7 @@ class _SellPageState extends State<SellPage> {
     _nameController.dispose();
     _priceController.dispose();
     _detailsController.dispose();
+    _quantityController.dispose();
     super.dispose();
   }
 
@@ -54,7 +59,7 @@ class _SellPageState extends State<SellPage> {
   }
 
   Future<void> _uploadProduct() async {
-    if (_nameController.text.isEmpty || _priceController.text.isEmpty || _detailsController.text.isEmpty) {
+    if (_nameController.text.isEmpty || _priceController.text.isEmpty || _detailsController.text.isEmpty || _quantityController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
       return;
     }
@@ -69,6 +74,7 @@ class _SellPageState extends State<SellPage> {
         'name': _nameController.text,
         'price': double.parse(_priceController.text),
         'details': _detailsController.text,
+        'quantity': int.parse(_quantityController.text), // Convert quantity to int
         'imageUrl': imageUrl,
       };
 
@@ -121,6 +127,11 @@ class _SellPageState extends State<SellPage> {
               controller: _priceController,
               decoration: const InputDecoration(labelText: 'Price'),
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            ),
+            TextField(
+              controller: _quantityController,
+              decoration: const InputDecoration(labelText: 'Quantity'),
+              keyboardType: const TextInputType.numberWithOptions(decimal: false),
             ),
             TextField(
               controller: _detailsController,
