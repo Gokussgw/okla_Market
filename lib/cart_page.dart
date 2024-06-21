@@ -33,10 +33,10 @@ class _CartPageState extends State<CartPage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return CircularProgressIndicator();
           }
-          totalPrice = 0; // Reset total price
-          var children = snapshot.data!.docs.map((DocumentSnapshot document) {
+          totalPrice = 0;
+          List<Widget> children = snapshot.data!.docs.map((DocumentSnapshot document) {
             Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
-            totalPrice += data['price'] * data['quantity']; // Calculate total price
+            totalPrice += data['price'] * data['quantity'];
 
             return Column(
               children: [
@@ -63,12 +63,16 @@ class _CartPageState extends State<CartPage> {
             );
           }).toList();
 
-          // Add the total price in its own Column at the end of the list
           children.add(
             Column(
               children: [
                 ListTile(
                   title: Text('Total Price: \$${totalPrice.toStringAsFixed(2)}', style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+                ElevatedButton(
+                  onPressed: checkoutCart,
+                  child: Text("Checkout", style: TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
                 ),
                 Divider(),
               ],
@@ -87,8 +91,62 @@ class _CartPageState extends State<CartPage> {
     if (newQuantity > 0) {
       reference.update({'quantity': newQuantity});
     } else {
-      // Optionally remove the item if quantity becomes 0
       reference.delete();
+    }
+  }
+
+  void checkoutCart() async {
+    QuerySnapshot cartSnapshot = await FirebaseFirestore.instance
+      .collection('cart')
+      .doc(widget.user.uid)
+      .collection('items')
+      .get();
+
+    List<Map<String, dynamic>> items = [];
+
+    for (var doc in cartSnapshot.docs) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      items.add({
+        'productId': doc.id,
+        'name': data['name'],
+        'price': data['price'],
+        'quantity': data['quantity'],
+        'imageUrl': data['imageUrl'],
+      });
+    }
+
+    if (items.isNotEmpty) {
+      DocumentReference salesRef = FirebaseFirestore.instance.collection('sales').doc();
+
+      await salesRef.set({
+        'userId': widget.user.uid,
+        'items': items,
+        'timestamp': FieldValue.serverTimestamp(),
+        'totalPrice': totalPrice,
+      });
+
+      // Delete all items in the cart after saving them to sales
+      for (var doc in cartSnapshot.docs) {
+        await doc.reference.delete();
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Thank you for purchasing!"),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      setState(() {
+        totalPrice = 0; // Reset total price after purchase
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("No items in the cart to checkout!"),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 }

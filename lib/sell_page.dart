@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:oklamarket/home_page.dart';
 import 'product_list_page.dart';
 
 class SellPage extends StatefulWidget {
@@ -85,7 +86,7 @@ class _SellPageState extends State<SellPage> {
         await FirebaseFirestore.instance.collection('products').doc(widget.product!.id).update(productData);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Product updated successfully!')));
       }
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProductListPage(user: widget.user)));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(user: widget.user)));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error uploading product: $e')));
     }
@@ -140,7 +141,10 @@ class _SellPageState extends State<SellPage> {
             ),
             ElevatedButton(
               onPressed: _uploadProduct,
-              child: Text(widget.product == null ? 'Upload Product' : 'Update Product'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 0, 0, 0), // Button color
+              ),
+              child: Text(widget.product == null ? 'Upload Product' : 'Update Product', style: const TextStyle(color: Colors.white)),
             ),
           ],
         ),

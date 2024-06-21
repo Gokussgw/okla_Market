@@ -19,11 +19,20 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late Stream<QuerySnapshot> _productsStream;
+  int _selectedIndex = 0;
+  late List<Widget> _widgetOptions;
 
   @override
   void initState() {
     super.initState();
     _productsStream = FirebaseFirestore.instance.collection('products').snapshots();
+    _widgetOptions = [
+      _buildProductGrid(),
+      ProfilePage(user: widget.user),
+      SellPage(user: widget.user),
+      ProductListPage(user: widget.user),
+      CartPage(user: widget.user),
+    ];
   }
 
   Widget _buildProductGrid() {
@@ -79,68 +88,51 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Welcome to the Market!'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.shopping_cart),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => CartPage(user: widget.user))
+        backgroundColor: Colors.black,
+        iconTheme: IconThemeData(color: Colors.white), // White color for back button
+        title: Stack(
+          children: <Widget>[
+            Align(
+              alignment: Alignment.center,
+              child: Image.asset(
+                'assets/logo.png', // Ensure your assets directory contains this image.
+                height: 30, // Adjust the size according to your AppBar's height
+              ),
             ),
-          ),
-          PopupMenuButton<int>(
-            onSelected: (item) => onSelected(context, item),
-            itemBuilder: (context) => [
-              PopupMenuItem<int>(value: 0, child: Text('Profile')),
-              PopupMenuItem<int>(value: 1, child: Text('Sell Product')),
-              PopupMenuItem<int>(value: 2, child: Text('Product List')),
-              PopupMenuItem<int>(value: 3, child: Text('Logout')),
-            ],
-          ),
-        ],
+          ],
+        ),
+        centerTitle: true,
       ),
-      body: _buildProductGrid(),
+      body: _widgetOptions.elementAt(_selectedIndex),
+      bottomNavigationBar: BottomNavigationBar(
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.add_shopping_cart), label: 'Sell'),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Product List'),
+          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Cart'),
+          BottomNavigationBarItem(icon: Icon(Icons.exit_to_app), label: 'Logout'),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.grey[800],
+        onTap: _onItemTapped,
+      ),
     );
   }
 
-  void onSelected(BuildContext context, int item) {
-    switch (item) {
-      case 0:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(user: widget.user)));
-        break;
-      case 1:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => SellPage(user: widget.user)));
-        break;
-      case 2:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ProductListPage(user: widget.user)));
-        break;
-      case 3:
-        _confirmSignOut(context);
-        break;
+  void _onItemTapped(int index) {
+    if (index == 5) {
+      _logout();
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
     }
   }
 
-  void _confirmSignOut(BuildContext context) async {
-    final bool didRequestSignOut = await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Logout'),
-        content: Text('Are you sure you want to logout?'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(true);
-              FirebaseAuth.instance.signOut();
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignInPage()));
-            },
-            child: Text('Logout', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    ) ?? false;
+  void _logout() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignInPage()));
   }
 }
