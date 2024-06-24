@@ -1,6 +1,6 @@
 {
-    "name": "oklamarket",
-    "short_name": "oklamarket",
+    "name": "okla_market",
+    "short_name": "okla_market",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

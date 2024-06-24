@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "oklamarket" "\0"
+            VALUE "FileDescription", "okla_market" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "oklamarket" "\0"
+            VALUE "InternalName", "okla_market" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2024 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "oklamarket.exe" "\0"
-            VALUE "ProductName", "oklamarket" "\0"
+            VALUE "OriginalFilename", "okla_market.exe" "\0"
+            VALUE "ProductName", "okla_market" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
