@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
 import 'home_page.dart';
 import 'product_list_page.dart';
+import 'forget_password.dart';
 
 class SellPage extends StatefulWidget {
   final User user;
